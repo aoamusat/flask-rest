@@ -1,5 +1,5 @@
-from app, import app
-from models import User
+from app import app
+from app.models import User
 from functools import wraps
 
 def token_required(f): 

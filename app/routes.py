@@ -1,25 +1,16 @@
-from flask import Flask, request, jsonify, make_response
-from flask_sqlalchemy import SQLAlchemy
-from  werkzeug.security import generate_password_hash, check_password_hash
+from flask import request, flash, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
-import secrets, jwt, uuid
-from models import User
-from helpers import token_required
+import secrets, jwt, uuid, os
+from app import app, db
+from app.models import User
+from app.helpers import token_required
 
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_hex(32)    #   generate secret key
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-
-# creates SQLALCHEMY object 
-db = SQLAlchemy(app)
-
-@app.route('/', methods=['GET'])
+@app.route('/test', methods=['GET'])
 def home():
-    return "Home"
-
+    data = request.get_json()
+    return jsonify(data.get('name'))
 
 @app.route('/register', methods =['POST']) 
 def register(): 
@@ -47,7 +38,3 @@ def register():
     else: 
         # returns 202 if user already exists 
         return jsonify({'message': 'User already exists. Please Log in.'}), 202
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3400, debug=True)
-    pass
