@@ -20,7 +20,7 @@ def register():
     user = User.query.filter_by(email = email).first() 
     if not user: 
         user = User( 
-            api_key = str(uuid.uuid4()), 
+            api_key = str(uuid.uuid4()), # generates an API key for the user
             name = name, 
             email = email, 
             password = generate_password_hash(password) 
@@ -32,7 +32,7 @@ def register():
         return (jsonify({'message': "User created"}), 201) 
     else: 
         # returns 202 if user already exists 
-        return jsonify({'message': 'User already exists. Please Log in.'}), 202
+        return jsonify({'message': 'User already exists!'}), 202
 
 
 @app.route('/login', methods =['POST']) 
@@ -41,12 +41,12 @@ def login():
 	data = request.get_json() 
 
 	if not data or not data.get('email') or not data.get('password'): 
-		# returns 401 if any email or / and password is missing 
+		# returns 401 if any email/password is missing 
 		return make_response( 
 			jsonify({'message':"Verification failed!"}), 
 			401, 
 			{'WWW-Authenticate' : 'Basic realm ="Login required !!"'} 
-		) 
+		)
 
 	user = User.query.filter_by(email = data.get('email')).first() 
 
@@ -61,7 +61,7 @@ def login():
 	if check_password_hash(user.password, data.get('password')): 
 		# generates the JWT Token using api_key and secret key
 		token = jwt.encode({ 
-			'api_key': user.public_key, 
+			'api_key': user.api_key, 
 			'exp' : datetime.utcnow() + timedelta(minutes = 30) 
 		}, app.config['SECRET_KEY']) 
 
@@ -75,14 +75,18 @@ def login():
     )
 
 
+# route to test API functionality
 @app.route('/posts', methods=['GET'])
 @token_required
 def posts():
-    post_list = [
-        "dasdasda",
-        "asdasdasdas"
-    ]
+    data = {
+        "user": {
+            "name": "Test",
+            "email": "test@test.com",
+        },
+        "deps": ["matplotlib", "pandas", "selenium"]
+    }
 
     return make_response( 
-        jsonify({'message':"OK!", 'posts': post_list}), 200
+        jsonify({'message':"OK!", 'data': data}), 200
     ) 

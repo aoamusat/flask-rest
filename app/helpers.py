@@ -19,7 +19,7 @@ def token_required(f):
         try: 
             # decoding the payload to extract user credentials 
             data = jwt.decode(token, app.config['SECRET_KEY']) 
-            current_user = User.query.filter_by(api_key = data['public_key']).first() 
+            current_user = User.query.filter_by(api_key = data['api_key']).first() 
         except: 
             return jsonify({'message' : 'Invalid access token!'}), 401
         
