@@ -67,10 +67,10 @@ def login():
 
 		return make_response(jsonify({'access_token' : token.decode('UTF-8')}), 201) 
 	
-    # returns 403 if password is wrong 
+    # returns 401 if password is wrong 
 	return make_response( 
         jsonify({'message':"Invalid Email/Password"}), 
-        403, 
+        401, 
         {'WWW-Authenticate' : 'Basic realm ="Invalid login details!!"'} 
     )
 
